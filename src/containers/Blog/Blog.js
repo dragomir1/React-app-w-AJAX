@@ -1,19 +1,34 @@
 import React, { Component } from 'react';
-
-import './Blog.css';
-import Posts from './Posts/Posts';
-import NewPost from './NewPost/NewPost';
-import FullPost from './FullPost/FullPost';
-// import axios from 'axios';
 import axios from '../../axios';
+import './Blog.css';
+// CODE BELOW IS PERFORMING LAZY LOADING - DOWNLOADING ONLY WHAT IS NEEDED.
+import asyncComponent from '../../hoc/asyncComp';
+import Posts from './Posts/Posts';
+// the NAVLINK is a component that is similar to the LINK, the difference is that is has extra properties which allow us to define some styling for the acive link.
+// the SWITCH COMPONENT TELLS REACT TO ONLY LOAD ONE route at a time.
+// THE Redirect COMPONENT REDIRECTS USERS TO SPECIFIC PAGES.  IT'S USED IN THE JSX CODE.
+import { Route, NavLink, Switch, Redirect } from 'react-router-dom';
+
+
+// import NewPost from './NewPost/NewPost';
+// THIS asyncComponent REQUIRES AN ANONYMOUS FUNCTION.
+const AsyncNewPost = asyncComponent(() => {
+  // using the import keyword as a function is a special syntax, the dynamic import syntax which means whatever comes inbwetween the parathesis is only imported with that function is executed. and that funciton is only executed when AsyncNewPost is rendered to the screen.
+  return import('./NewPost/NewPost');
+});
+
+
 // this loads the route component.  the Link component allows us to create links.
 // import { Route, Link } from 'react-router-dom';
 
-// the NAVLINK is a component that is similar to the LINK, the difference is that is has extra properties which allow us to define some styling for the acive link.
-// the SWITCH COMPONENT TELLS REACT TO ONLY LOAD ONE route at a time.
-import { Route, NavLink, Switch } from 'react-router-dom';
 
+// USING GUARDS..THE ATUH STATE IS SET TO FALSE..MEANING THAT THE USER IS INITAILLY UNAUTHENTICATED.
 class Blog extends Component {
+  state = {
+    auth: true
+  }
+
+
   render () {
     // the <Route /> component has a path property that is reserved.  Path is a string. you define the path for which the route to become active.
     // render={() => } defines what should happen whent this path is the active path.
@@ -32,7 +47,7 @@ class Blog extends Component {
                   {/*we replace anchor tags with the Link component.  The "to" property tell the Link where it should lead to.*/}
                   {/*NAVLINK TAKEAWAYS - TO STYLE ACTIVE LINKS, YOU HAVE TO USE THE NAVLINK OBJECT,AND YOU MIGHT NEED TO USE EXACT TO MAKE SURE YOU STYLE THE LINKS FOR THE ROUTES YOU WANT TO STYLE*/}
                     <li><NavLink
-                      to="/"
+                      to="/posts/"
                       exact
                       activeClassName="my-active"
                       activeStyle={{
@@ -60,11 +75,16 @@ class Blog extends Component {
               {/*THIS IS PARSED FROM TOP TO BOTTOM.  NEW-POST IS RECOGNIZED FIRST*/}
 
               {/*THE SWITCH COMPONENT TELLS REACT TO ONLY LOAD ONE ROUTE AT A TIME. THE FIRST ONE YOU FIND THAT MATCHES FROM A GIVEN ROUTE. you can also place routes outside of swtich..mix and match*/}
-              <Route path="/" exact component={Posts} />
+
               <Switch>
-                <Route path="/new-post" component={NewPost } />
-                {/*WE ARE ARE LOADING A SPECIC POST.  WE NEED TO DEFINE A FLEXIBLE VARIABLE ROUTE PARAMETER*/}
-                <Route path="/:id" exact component={FullPost} />
+              {/*this is a guard. HERE WE ADD A CONDITIONAL THAT IF THE USER IS AUTHENTICATED THEN THEY HAVE ACCESS TO THE PAGE.  OTHERWISE IF THE USER IS NOT AUTHENTICATED, THEY CANT GET ACCESS*/}
+                {this.state.auth ? <Route path="/new-post" component={AsyncNewPost} /> : null}
+                <Route path="/posts" component={Posts} />
+                {/*handling 404 cases*/}
+                {/*<Route render={() => <h1> 404 cases - Not found ,/h1>} />*/}
+                {/*the redirect component redirects users. it has a from property..from which route you want to navigate to which route */}
+                <Redirect from="/" to="/posts" />
+
               </Switch>
 
 

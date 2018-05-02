@@ -2,6 +2,8 @@ import React, { Component} from 'react';
 import axios from '../../../axios';
 import Post from '../../../components/Post/Post';
 import './Posts.css';
+import { Route } from 'react-router-dom';
+import FullPost from '../FullPost/FullPost';
 // import { Link } from 'react-router-dom';
 
 
@@ -16,7 +18,7 @@ class Posts extends Component {
     // this code is an example of navigating programmatically. in this use case, you want to naviagate after something finished. after an http request was sent.
     // we take advantaage of the history object we received on the props...navigation is about a stack of pages.  that's why the back and forward buttons work on a browser.
     // the PUSH method allows you to move around in the stack. it's a string or an object.
-    this.props.history.push({pathname: '/' + id})
+    this.props.history.push({pathname: '/posts/' + id})
 
     // this.setState({selectedPostId: id});
   }
@@ -65,9 +67,13 @@ class Posts extends Component {
       });
     }
     return (
-      <section className="Posts">
-        {posts}
-      </section>
+      <div>
+        <section className="Posts">
+          {posts}
+        </section>
+        {/*THIS IS A NESTED ROUTE.you can use the route component anwhere in your app as long as the component where you are using it is wrapped by the BrowserRouter component*/}
+        <Route path={this.props.match.url + '/:id' } exact component={FullPost} />
+      </div>
     );
   }
 }
