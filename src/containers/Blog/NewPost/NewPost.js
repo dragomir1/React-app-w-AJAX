@@ -9,6 +9,11 @@ class NewPost extends Component {
         author: 'tee'
     }
 // THE POST REQUEST TAKES IN TWO ARGUMENTS.  THE FIRST ONE THE URL, AND THE SECOND ONE IS THE DATA YOU WANT TO SEND.
+
+    componentDidMount() {
+      console.log(this.props);
+    }
+    
     postDataHandler = () => {
       const post = {
         title: this.state.title,
